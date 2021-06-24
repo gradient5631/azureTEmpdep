@@ -1,0 +1,98 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineName": {
+            "defaultValue": "ca-lab-vm",
+            "type": "String"
+        },
+        "virtualMachineSize": {
+            "defaultValue": "Standard_B2ms",
+            "type": "String"
+        },
+        "adminUsername": {
+            "defaultValue": "student",
+            "type": "String"
+        },
+        "virtualNetworkName": {
+            "defaultValue": "ca-lab-vnet",
+            "type": "String"
+        },
+        "networkInterfaceName": {
+            "defaultValue": "ca-lab-vm001",
+            "type": "String"
+        },
+        "networkSecurityGroupName": {
+            "defaultValue": "ca-lab-vm-nsg",
+            "type": "String"
+        },
+        "adminPassword": {
+            "defaultValue": "1Cloud_Academy_Labs!",
+            "type": "String"
+        },
+        "storageAccountName": {
+            "defaultValue": "calabdisks",
+            "type": "String"
+        },
+        "storageAccountType": {
+            "defaultValue": "Standard_LRS",
+            "type": "String"
+        },
+        "addressPrefix": {
+            "defaultValue": "10.0.0.0/24",
+            "type": "String"
+        },
+        "subnetName": {
+            "defaultValue": "default",
+            "type": "String"
+        },
+        "subnetPrefix": {
+            "defaultValue": "10.0.0.0/24",
+            "type": "String"
+        },
+        "publicIpAddressName": {
+            "defaultValue": "ca-lab-vm-ip",
+            "type": "String"
+        },
+        "publicIpAddressType": {
+            "defaultValue": "Dynamic",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2015-06-15",
+            "name": "[replace(concat(parameters('storageAccountName'), resourceGroup().name),'-', '')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "accountType": "[parameters('storageAccountType')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2016-12-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
